@@ -186,6 +186,7 @@ struct DetailView: View {
 
 struct ReminderRow: View {
     @EnvironmentObject var store: ReminderStore
+    @State private var showDeleteConfirm = false
     let reminder: Reminder
     
     var categoryColor: Color {
@@ -250,7 +251,22 @@ struct ReminderRow: View {
                         .foregroundColor(.red)
                 }
             }
+            
+            Button(action: { showDeleteConfirm = true }) {
+                Image(systemName: "trash")
+                    .foregroundColor(.red)
+                    .font(.caption)
+            }
+            .buttonStyle(.plain)
         }
         .padding(.vertical, 4)
+        .alert("Delete \"\(reminder.title)\"?", isPresented: $showDeleteConfirm) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete", role: .destructive) {
+                store.delete(reminder)
+            }
+        } message: {
+            Text("This cannot be undone.")
+        }
     }
 }
